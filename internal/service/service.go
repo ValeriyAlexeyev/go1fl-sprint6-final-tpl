@@ -9,7 +9,6 @@ import (
 
 var ErrEmptyInput = errors.New("input is empty")
 
-// Convert определяет формат и конвертирует
 func Convert(input string) (string, error) {
 	input = strings.TrimSpace(input)
 
@@ -17,19 +16,10 @@ func Convert(input string) (string, error) {
 		return "", ErrEmptyInput
 	}
 
-	if isMorse(input) {
+	// если есть точка или тире → считаем что это Morse
+	if strings.Contains(input, ".") || strings.Contains(input, "-") {
 		return morse.ToText(input), nil
 	}
 
 	return morse.ToMorse(input), nil
-}
-
-// isMorse — чистая функция определения формата
-func isMorse(s string) bool {
-	for _, r := range s {
-		if r != '.' && r != '-' && r != ' ' && r != '/' {
-			return false
-		}
-	}
-	return true
 }
