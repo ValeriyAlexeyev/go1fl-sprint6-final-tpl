@@ -11,6 +11,7 @@ import (
 	"github.com/ValeriyAlexeyev/go1fl-sprint6-final/internal/service"
 )
 
+// IndexHandler отдаёт index.html
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -20,6 +21,7 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "index.html")
 }
 
+// UploadHandler принимает данные и конвертирует их
 func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -55,7 +57,5 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprint(w, result)
-}
 	fmt.Fprint(w, result)
 }
