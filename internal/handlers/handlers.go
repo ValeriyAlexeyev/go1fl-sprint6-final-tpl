@@ -13,6 +13,7 @@ import (
 
 const maxUploadSize = 10 << 20 // 10MB
 
+// IndexHandler отдаёт index.html
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -22,6 +23,7 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "index.html")
 }
 
+// UploadHandler загружает файл и конвертирует его
 func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -70,6 +72,4 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Fprint(w, result)
-}
-	return filename, nil
 }
