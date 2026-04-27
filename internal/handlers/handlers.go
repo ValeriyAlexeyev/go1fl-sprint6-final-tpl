@@ -11,9 +11,6 @@ import (
 	"github.com/ValeriyAlexeyev/go1fl-sprint6-final/internal/service"
 )
 
-const maxUploadSize = 10 << 20 // 10MB
-
-// IndexHandler отдаёт index.html
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -23,53 +20,42 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "index.html")
 }
 
-// UploadHandler загружает файл и конвертирует его
 func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	err := r.ParseMultipartForm(maxUploadSize)
-	if err != nil {
-		http.Error(w, "parse form error", http.StatusInternalServerError)
-		return
-	}
+	defer r.Body.Close()
 
-	file, header, err := r.FormFile("file")
+	data, err := io.ReadAll(r.Body)
 	if err != nil {
-		http.Error(w, "file read error", http.StatusInternalServerError)
-		return
-	}
-	defer file.Close()
-
-	data, err := io.ReadAll(file)
-	if err != nil {
-		http.Error(w, "read file error", http.StatusInternalServerError)
+		http.Error(w, "read body error", http.StatusInternalServerError)
 		return
 	}
 
 	result, err := service.Convert(string(data))
 	if err != nil {
-		http.Error(w, "convert error", http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	ext := filepath.Ext(header.Filename)
-	filename := time.Now().UTC().String() + ext
+	filename := time.Now().UTC().String() + filepath.Ext("result.txt")
 
-	outFile, err := os.Create(filename)
+	file, err := os.Create(filename)
 	if err != nil {
 		http.Error(w, "create file error", http.StatusInternalServerError)
 		return
 	}
-	defer outFile.Close()
+	defer file.Close()
 
-	_, err = outFile.WriteString(result)
+	_, err = file.WriteString(result)
 	if err != nil {
 		http.Error(w, "write file error", http.StatusInternalServerError)
 		return
 	}
 
+	fmt.Fprint(w, result)
+}
 	fmt.Fprint(w, result)
 }
